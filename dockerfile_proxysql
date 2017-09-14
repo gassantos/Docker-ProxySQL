@@ -1,0 +1,25 @@
+FROM centos:7
+LABEL MAINTAINER Gustavo Alexandre e Bruno Belizario
+
+#
+RUN yum install -y wget
+
+# 
+RUN wget http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm && wget https://github.com/sysown/proxysql/releases/download/v1.4.2/proxysql-1.4.2-1-centos7.x86_64.rpm && wget https://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-10.noarch.rpm
+
+#
+RUN yum install -y mysql-community-release-el7-5.noarch.rpm proxysql-1.4.2-1-centos7.x86_64.rpm epel-release-7-10.noarch.rpm && yum install -y mysql snmp wget
+
+#
+ADD proxysql.cnf /etc/proxysql.cnf
+
+# 
+VOLUME /var/lib/proxysql
+
+#
+EXPOSE 3306 6032
+ONBUILD RUN yum update -y
+
+#
+CMD ["proxysql", "--initial", "-f", "-c /etc/proxysql.cnf"]
+
